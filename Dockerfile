@@ -5,9 +5,9 @@ ENV CONFIGDIR="/config" \
    APPBASE=/Subsonic \
 	REPO="git://git.code.sf.net/p/subsonic/git" \
    DEPENDENCIES="tzdata openjdk8-jre fontconfig openssl zip ffmpeg lame mariadb-client"
-#ttf-dejavu 
 
 COPY start-subsonic.sh /usr/local/bin/start-subsonic.sh
+COPY healthcheck.sh /usr/local/bin/healthcheck.sh
 
 RUN echo "$(date '+%d/%m/%Y - %H:%M:%S') | ***** BUILD STARTED *****" && \
 echo "$(date '+%d/%m/%Y - %H:%M:%S') | Install application dependencies" && \
@@ -27,7 +27,7 @@ echo "$(date '+%d/%m/%Y - %H:%M:%S') | Install Subsonic" && \
    mv "${APPBASE}/db/" "${CONFIGDIR}" && \
    ln -s "${CONFIGDIR}/db/" "${APPBASE}/" && \
 echo "$(date '+%d/%m/%Y - %H:%M:%S') | Set permissions on launcher" && \
-   chmod +x /usr/local/bin/start-subsonic.sh && \
+   chmod +x /usr/local/bin/start-subsonic.sh /usr/local/bin/healthcheck.sh && \
 echo "$(date '+%d/%m/%Y - %H:%M:%S') | ***** BUILD COMPLETE *****"
 
 VOLUME "${CONFIGDIR}"
