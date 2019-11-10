@@ -107,8 +107,8 @@ SetOwnerAndGroup(){
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Correct owner and group of application files, if required"
    if [ ! -f "${APPBASE}/subsonic_sh.log" ]; then touch "${APPBASE}/subsonic_sh.log"; fi
    if [ ! -f "${APPBASE}/subsonic.log" ]; then touch "${APPBASE}/subsonic.log"; fi
-   find "${APPBASE}" ! -user "${USER}" -exec chown "${USER}" {} \;
-   find "${APPBASE}" ! -group "${GROUP}" -exec chgrp "${GROUP}" {} \;
+   find -L "${APPBASE}" ! -user "${USER}" -exec chown "${USER}" {} \;
+   find -L "${APPBASE}" ! -group "${GROUP}" -exec chgrp "${GROUP}" {} \;
    find "${CONFIGDIR}" ! -user "${USER}" -exec chown "${USER}" {} \;
    find "${CONFIGDIR}" ! -group "${GROUP}" -exec chgrp "${GROUP}" {} \;
 }
