@@ -44,15 +44,15 @@ Initialise(){
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    SUBSONIC_HTTPS_PORT set to ${SUBSONIC_HTTPS_PORT}"
    fi
 
-   if [ ! -z "${SUBSONIC_DEFAULT_MUSIC_FOLDER}" ]; then 
+   if [ "${SUBSONIC_DEFAULT_MUSIC_FOLDER}" ]; then 
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Subsonic default music directory: ${SUBSONIC_DEFAULT_MUSIC_FOLDER}"
    fi
 
-   if [ ! -z "${SUBSONIC_DEFAULT_PODCAST_FOLDER}" ]; then 
+   if [ "${SUBSONIC_DEFAULT_PODCAST_FOLDER}" ]; then 
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Subsonic default music directory: ${SUBSONIC_DEFAULT_PODCAST_FOLDER}"
    fi
 
-   if [ ! -z "${SUBSONIC_DEFAULT_PLAYLIST_FOLDER}" ]; then 
+   if [ "${SUBSONIC_DEFAULT_PLAYLIST_FOLDER}" ]; then 
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Subsonic default music directory: ${SUBSONIC_DEFAULT_PLAYLIST_FOLDER}"
    fi
 
