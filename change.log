@@ -1,0 +1,3 @@
+20200202
+ - Improvement: Moved the file/link creation stuff out of the Dockerfile and into the startup script. This will mean the container can have its config directory removed and still boot to a defualt config.
+
