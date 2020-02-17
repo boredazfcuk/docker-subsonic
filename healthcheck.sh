@@ -1,14 +1,14 @@
 #!/bin/ash
-exit_code=0
-exit_code="$(wget --quiet --tries=1 --spider --no-check-certificate "http://${HOSTNAME}:4040/subsonic" && echo ${?})"
-if [ "${exit_code}" != 0 ]; then
-   echo "HTTP WebUI not responding: Error ${exit_code}"
+
+if [ "$(nc -z "$(hostname -i)" 4040; echo "${?}")" -ne 0 ]; then
+   echo "Subsonic HTTP port 4040 is not responding"
    exit 1
 fi
-exit_code="$(wget --quiet --tries=1 --spider --no-check-certificate "https://${HOSTNAME}:4141/subsonic" && echo ${?})"
-if [ "${exit_code}" != 0 ]; then
-   echo "HTTPS WebUI not responding: Error ${exit_code}"
+
+if [ "$(nc -z "$(hostname -i)" 4141; echo "${?}")" -ne 0 ]; then
+   echo "Subsonic HTTP port 4141 is not responding"
    exit 1
 fi
-echo "WebUIs available"
+
+echo "Subsonic ports 4040 and 4141 responding OK"
 exit 0

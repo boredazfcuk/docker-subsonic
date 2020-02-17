@@ -1,3 +1,8 @@
+20200212
+
+ - Change: Healthcheck now checks that the WebGUIs are responding on ports 4040 and 4141
+
 20200202
- - Improvement: Moved the file/link creation stuff out of the Dockerfile and into the startup script. This will mean the container can have its config directory removed and still boot to a defualt config.
+
+ - Change: Moved the file/link creation stuff out of the Dockerfile and into the startup script. This will mean the container can have its config directory removed and still boot to a defualt config.
 

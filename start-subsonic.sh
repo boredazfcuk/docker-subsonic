@@ -88,7 +88,7 @@ LaunchSubsonic(){
       rm "${config_dir}/db/subsonic.lck"
    fi
    export SUBSONIC_HOST SUBSONIC_HOME SUBSONIC_MAX_MEMORY SUBSONIC_CONTEXT_PATH SUBSONIC_DB SUBSONIC_PORT SUBSONIC_HTTPS_PORT SUBSONIC_DEFAULT_MUSIC_FOLDER
-   su -m "${stack_user}" -c "${app_base_dir}/subsonic.sh"
+   su -p "${stack_user}" -c "${app_base_dir}/subsonic.sh"
    tail -Fn0 "${app_base_dir}/subsonic_sh.log" &
    tail -Fn0 "${app_base_dir}/subsonic.log"
 }
