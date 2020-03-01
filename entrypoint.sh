@@ -8,8 +8,6 @@ Initialise(){
    SUBSONIC_HTTPS_PORT=4141
    echo -e "\n"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** Starting application container *****"
-   if [ ! -f "${app_base_dir}/subsonic_sh.log" ]; then touch "${app_base_dir}/subsonic_sh.log"; fi
-   if [ ! -f "${app_base_dir}/subsonic.log" ]; then touch "${app_base_dir}/subsonic.log"; fi
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Username: ${stack_user:=stackman}:${user_id:=1000}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Password: ${stack_password:=Skibidibbydibyodadubdub}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Group: ${group:=subsonic}:${group_id:=1000}"
@@ -32,6 +30,12 @@ Initialise(){
    if [ ! -L "${app_base_dir}/db/" ]; then ln -s "${config_dir}/db/" "${app_base_dir}/"; fi
    if [ ! -f "${config_dir}/subsonic.properties" ]; then touch "${config_dir}/subsonic.properties"; fi
    if [ ! -L "${app_base_dir}/subsonic.properties" ]; then ln -s "${config_dir}/subsonic.properties" "${app_base_dir}/"; fi
+   if [ ! -L "${app_base_dir}/subsonic.log" ]; then
+      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Redirect Subsonic log to stdout"
+      if [ -f "${app_base_dir}/subsonic.log" ]; then rm "${app_base_dir}/subsonic.log"; fi
+      ln -sf "/dev/stdout" "${app_base_dir}/subsonic.log"
+   fi
+   
 }
 
 EnableSSL(){
@@ -81,16 +85,23 @@ SetOwnerAndGroup(){
    find "${config_dir}" ! -group "${group}" -exec chgrp "${group}" {} \;
 }
 
-LaunchSubsonic(){
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Starting Subsonic as ${stack_user}"
+RemoveLockFile(){
    if [ -f "${config_dir}/db/subsonic.lck" ]; then
       echo "$(date '+%Y-%m-%d %H:%M:%S') WARNING: Lock file already exists. Previous shutdown was not clean. Removing lock file"
       rm "${config_dir}/db/subsonic.lck"
    fi
-   export SUBSONIC_HOST SUBSONIC_HOME SUBSONIC_MAX_MEMORY SUBSONIC_CONTEXT_PATH SUBSONIC_DB SUBSONIC_PORT SUBSONIC_HTTPS_PORT SUBSONIC_DEFAULT_MUSIC_FOLDER
-   su -p "${stack_user}" -c "${app_base_dir}/subsonic.sh"
-   tail -Fn0 "${app_base_dir}/subsonic_sh.log" &
-   tail -Fn0 "${app_base_dir}/subsonic.log"
+
+}
+
+LaunchSubsonic(){
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** Configuration of Subsonic container launch environment complete *****"
+   if [ -z "${1}" ]; then
+       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Starting Subsonic as ${stack_user}"
+	   export SUBSONIC_HOST SUBSONIC_HOME SUBSONIC_MAX_MEMORY SUBSONIC_CONTEXT_PATH SUBSONIC_DB SUBSONIC_PORT SUBSONIC_HTTPS_PORT SUBSONIC_DEFAULT_MUSIC_FOLDER
+	   exec "$(which su)" -p "${stack_user}" -c "${app_base_dir}/subsonic.sh && sleep 999999"
+   else
+      exec "$@"
+   fi
 }
 
 ##### Script #####
@@ -99,4 +110,5 @@ EnableSSL
 CreateGroup
 CreateUser
 SetOwnerAndGroup
+RemoveLockFile
 LaunchSubsonic

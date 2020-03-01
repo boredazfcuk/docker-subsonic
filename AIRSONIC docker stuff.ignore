@@ -1,0 +1,17 @@
+HEALTHCHECK --interval=15s --timeout=3s CMD wget -q http://localhost:"$AIRSONIC_PORT""$CONTEXT_PATH"rest/ping -O /dev/null || exit 1
+
+RUN apk --no-cache add \
+    ffmpeg \
+    lame \
+    bash \
+    libressl \
+    fontconfig \
+    ttf-dejavu \
+    ca-certificates \
+    tini \
+    curl \
+    openjdk8-jre
+	
+	
+	
+	tini - Process launcher and zombie process cleanup. Protper sigterm handling
