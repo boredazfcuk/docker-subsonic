@@ -27,7 +27,10 @@ Initialise(){
    if [ -f "/usr/bin/ffmpeg" ] && [ ! -L "${app_base_dir}/transcode/ffmpeg" ]; then ln -s "/usr/bin/ffmpeg" "${app_base_dir}/transcode/"; fi
    if [ -f "/usr/bin/lame" ] && [ ! -L "${app_base_dir}/transcode/lame" ]; then ln -s "/usr/bin/lame" "${app_base_dir}/transcode/"; fi
    if [ ! -d "${config_dir}/db/" ]; then mkdir "${config_dir}/db/"; fi
-   if [ ! -L "${app_base_dir}/db/" ]; then ln -s "${config_dir}/db/" "${app_base_dir}/"; fi
+   if [ ! -L "${app_base_dir}/db/" ]; then 
+      if [ -d "${app_base_dir}/db/" ]; then rm -r "${app_base_dir}/db/"; fi
+      ln -s "${config_dir}/db/" "${app_base_dir}"
+   fi
    if [ ! -f "${config_dir}/subsonic.properties" ]; then touch "${config_dir}/subsonic.properties"; fi
    if [ ! -L "${app_base_dir}/subsonic.properties" ]; then ln -s "${config_dir}/subsonic.properties" "${app_base_dir}/"; fi
    if [ ! -L "${app_base_dir}/subsonic.log" ]; then
@@ -35,7 +38,6 @@ Initialise(){
       if [ -f "${app_base_dir}/subsonic.log" ]; then rm "${app_base_dir}/subsonic.log"; fi
       ln -sf "/dev/stdout" "${app_base_dir}/subsonic.log"
    fi
-   
 }
 
 EnableSSL(){
