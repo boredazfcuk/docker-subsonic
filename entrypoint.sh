@@ -6,7 +6,7 @@ Initialise(){
    SUBSONIC_HOME="${app_base_dir:=/Subsonic}"
    SUBSONIC_PORT=4040
    SUBSONIC_HTTPS_PORT=4141
-   echo -e "\n"
+   echo
    echo "$(date '+%c') INFO:    ***** Starting application container *****"
    echo "$(date '+%c') INFO:    $(cat /etc/*-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/"//g')"
    echo "$(date '+%c') INFO:    Username: ${stack_user:=stackman}:${user_id:=1000}"
