@@ -1,11 +1,11 @@
 #!/bin/ash
 
-if [ "$(nc -z "$(hostname -i)" 4040; echo $?)" -ne 0 ]; then
+if [ "$(netstat -plnt | grep -c 4040)" -ne 1 ]; then
    echo "Subsonic HTTP port 4040 is not responding"
    exit 1
 fi
 
-if [ "$(nc -z "$(hostname -i)" 4141; echo $?)" -ne 0 ]; then
+if [ "$(netstat -plnt | grep -c 4141)" -ne 1 ]; then
    echo "Subsonic HTTP port 4141 is not responding"
    exit 1
 fi
