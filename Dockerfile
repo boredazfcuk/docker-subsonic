@@ -1,6 +1,6 @@
 FROM alpine:latest
 MAINTAINER boredazfcuk
-ARG app_dependencies="tzdata openjdk8-jre fontconfig openssl zip ffmpeg lame mariadb-client wget"
+ARG app_dependencies="tzdata ca-certificates openjdk8-jre fontconfig openssl zip ffmpeg lame mariadb-client wget"
 ENV config_dir="/config" \
    app_base_dir="/Subsonic"
 
