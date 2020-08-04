@@ -4,8 +4,9 @@
 Initialise(){
    SUBSONIC_HOST="$(hostname -i)"
    SUBSONIC_HOME="${app_base_dir:=/Subsonic}"
-   SUBSONIC_PORT=4040
-   SUBSONIC_HTTPS_PORT=4141
+   SUBSONIC_CONTEXT_PATH="${subsonic_context_path}"
+   SUBSONIC_PORT=3030
+   SUBSONIC_HTTPS_PORT=3131
    echo
    echo "$(date '+%c') INFO:    ***** Starting application container *****"
    echo "$(date '+%c') INFO:    $(cat /etc/*-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/"//g')"
@@ -22,8 +23,8 @@ Initialise(){
    echo "$(date '+%c') INFO:       SUBSONIC_DEFAULT_MUSIC_FOLDER: ${SUBSONIC_DEFAULT_MUSIC_FOLDER:=/storage/music/}"
    echo "$(date '+%c') INFO:       SUBSONIC_DEFAULT_PODCAST_FOLDER: ${SUBSONIC_DEFAULT_PODCAST_FOLDER:=/storage/music/Podcast}"
    echo "$(date '+%c') INFO:       SUBSONIC_DEFAULT_PLAYLIST_FOLDER: ${SUBSONIC_DEFAULT_PLAYLIST_FOLDER:=/var/playlists/}"
-   echo "$(date '+%c') INFO:    Subsonic available at: http://${SUBSONIC_HOST}:4040${SUBSONIC_CONTEXT_PATH}"
-   echo "$(date '+%c') INFO:    Subsonic available at: https://${SUBSONIC_HOST}:4141${SUBSONIC_CONTEXT_PATH}"
+   echo "$(date '+%c') INFO:    Subsonic available at: http://${SUBSONIC_HOST}:3030${SUBSONIC_CONTEXT_PATH}"
+   echo "$(date '+%c') INFO:    Subsonic available at: https://${SUBSONIC_HOST}:3131${SUBSONIC_CONTEXT_PATH}"
    if [ ! -d "${app_base_dir}/transcode/" ]; then mkdir "${app_base_dir}/transcode/"; fi
    if [ -f "/usr/bin/ffmpeg" ] && [ ! -L "${app_base_dir}/transcode/ffmpeg" ]; then ln -s "/usr/bin/ffmpeg" "${app_base_dir}/transcode/"; fi
    if [ -f "/usr/bin/lame" ] && [ ! -L "${app_base_dir}/transcode/lame" ]; then ln -s "/usr/bin/lame" "${app_base_dir}/transcode/"; fi
@@ -100,7 +101,8 @@ LaunchSubsonic(){
    echo "$(date '+%c') INFO:    ***** Configuration of Subsonic container launch environment complete *****"
    if [ -z "${1}" ]; then
        echo "$(date '+%c') INFO:    Starting Subsonic as ${stack_user}"
-	   export SUBSONIC_HOST SUBSONIC_HOME SUBSONIC_MAX_MEMORY SUBSONIC_CONTEXT_PATH SUBSONIC_DB SUBSONIC_PORT SUBSONIC_HTTPS_PORT SUBSONIC_DEFAULT_MUSIC_FOLDER
+# SUBSONIC_HTTPS_PORT
+	   export SUBSONIC_HOST SUBSONIC_HOME SUBSONIC_MAX_MEMORY SUBSONIC_CONTEXT_PATH SUBSONIC_DB SUBSONIC_PORT SUBSONIC_DEFAULT_MUSIC_FOLDER
 	   exec "$(which su)" -p "${stack_user}" -c "${app_base_dir}/subsonic.sh && sleep 999999"
    else
       exec "$@"
