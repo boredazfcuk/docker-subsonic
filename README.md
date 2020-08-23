@@ -1,2 +1,1 @@
-# docker-subsonic
-An Alpine Linux Docker container for Subsonic AS' Subsonic
+# No longer maintained. Replaced by docker-airsonic for music and docker-jellyfin for video
