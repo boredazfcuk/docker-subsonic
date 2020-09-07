@@ -4,7 +4,7 @@ ARG app_dependencies="tzdata ca-certificates openjdk8-jre fontconfig openssl zip
 ENV config_dir="/config" \
    app_base_dir="/Subsonic"
 
-RUN echo "$(date '+%d/%m/%Y - %H:%M:%S') | ***** BUILD STARTED *****" && \
+RUN echo "$(date '+%d/%m/%Y - %H:%M:%S') | ***** BUILD STARTED FOR SUBSONIC *****" && \
 echo "$(date '+%d/%m/%Y - %H:%M:%S') | Install application dependencies" && \
    apk add --no-cache --no-progress ${app_dependencies} && \
 echo "$(date '+%d/%m/%Y - %H:%M:%S') | Install Subsonic" && \
