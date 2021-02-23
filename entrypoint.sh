@@ -2,6 +2,7 @@
 
 ##### Functions #####
 Initialise(){
+   default_gateway="$(ip route | grep "^default" | awk '{print $3}')"
    SUBSONIC_HOST="$(hostname -i)"
    SUBSONIC_HOME="${app_base_dir:=/Subsonic}"
    SUBSONIC_CONTEXT_PATH="${subsonic_context_path}"
@@ -10,7 +11,7 @@ Initialise(){
    echo
    echo "$(date '+%c') INFO:    ***** Starting application container *****"
    echo "$(date '+%c') INFO:    $(cat /etc/*-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/"//g')"
-   echo "$(date '+%c') INFO:    Username: ${stack_user:=stackman}:${user_id:=1000}"
+   echo "$(date '+%c') INFO:    Username: ${stack_user:=stackman}:${stack_uid:=1000}"
    echo "$(date '+%c') INFO:    Password: ${stack_password:=Skibidibbydibyodadubdub}"
    echo "$(date '+%c') INFO:    Group: ${group:=subsonic}:${group_id:=1000}"
    echo "$(date '+%c') INFO:    Configuration directory: ${config_dir:=/config}"
@@ -25,6 +26,7 @@ Initialise(){
    echo "$(date '+%c') INFO:       SUBSONIC_DEFAULT_PLAYLIST_FOLDER: ${SUBSONIC_DEFAULT_PLAYLIST_FOLDER:=/var/playlists/}"
    echo "$(date '+%c') INFO:    Subsonic available at: http://${SUBSONIC_HOST}:3030${SUBSONIC_CONTEXT_PATH}"
    echo "$(date '+%c') INFO:    Subsonic available at: https://${SUBSONIC_HOST}:3131${SUBSONIC_CONTEXT_PATH}"
+   echo "$(date '+%c') INFO:    Docker host LAN IP subnet: ${host_lan_ip_subnet}"
    if [ ! -d "${app_base_dir}/transcode/" ]; then mkdir "${app_base_dir}/transcode/"; fi
    if [ -f "/usr/bin/ffmpeg" ] && [ ! -L "${app_base_dir}/transcode/ffmpeg" ]; then ln -s "/usr/bin/ffmpeg" "${app_base_dir}/transcode/"; fi
    if [ -f "/usr/bin/lame" ] && [ ! -L "${app_base_dir}/transcode/lame" ]; then ln -s "/usr/bin/lame" "${app_base_dir}/transcode/"; fi
@@ -42,9 +44,9 @@ Initialise(){
    fi
 }
 
-CheckOpenVPNPIA(){
-   if [ "${openvpnpia_enabled}" ]; then
-      echo "$(date '+%c') INFO:    OpenVPNPIA is enabled. Wait for VPN to connect"
+CheckPIANextGen(){
+   if [ "${pianextgen_enabled}" ]; then
+      echo "$(date '+%c') INFO:    PIANextGen is enabled. Wait for VPN to connect"
       vpn_adapter="$(ip addr | grep tun.$ | awk '{print $7}')"
       while [ -z "${vpn_adapter}" ]; do
          vpn_adapter="$(ip addr | grep tun.$ | awk '{print $7}')"
@@ -52,7 +54,14 @@ CheckOpenVPNPIA(){
       done
       echo "$(date '+%c') INFO:    VPN adapter available: ${vpn_adapter}"
    else
-      echo "$(date '+%c') INFO:    OpenVPNPIA is not enabled"
+      echo "$(date '+%c') INFO:    PIANextGen shared network stack is not enabled, configure container forwarding mode mode"
+      pianextgen_host="$(getent hosts pianextgen | awk '{print $1}')"
+      echo "$(date '+%c') INFO:    PIANextGen container IP address: ${pianextgen_host}"
+      echo "$(date '+%c') INFO:    Create default route via ${pianextgen_host}"
+      ip route del default 
+      ip route add default via "${pianextgen_host}"
+      echo "$(date '+%c') INFO:    Create additional route to Docker host network ${host_lan_ip_subnet} via ${default_gateway}"
+      ip route add "${host_lan_ip_subnet}" via "${default_gateway}"
    fi
 }
 
@@ -100,20 +109,20 @@ CreateGroup(){
 }
 
 CreateUser(){
-   if [ "$(grep -c "^${stack_user}:x:${user_id}:${group_id}" "/etc/passwd")" -eq 1 ]; then
-      echo "$(date '+%c') INFO     User, ${stack_user}:${user_id}, already created"
+   if [ "$(grep -c "^${stack_user}:x:${stack_uid}:${group_id}" "/etc/passwd")" -eq 1 ]; then
+      echo "$(date '+%c') INFO     User, ${stack_user}:${stack_uid}, already created"
    else
       if [ "$(grep -c "^${stack_user}:" "/etc/passwd")" -eq 1 ]; then
          echo "$(date '+%c') ERROR    User name, ${stack_user}, already in use - exiting"
          sleep 120
          exit 1
-      elif [ "$(grep -c ":x:${user_id}:$" "/etc/passwd")" -eq 1 ]; then
-         echo "$(date '+%c') ERROR    User id, ${user_id}, already in use - exiting"
+      elif [ "$(grep -c ":x:${stack_uid}:$" "/etc/passwd")" -eq 1 ]; then
+         echo "$(date '+%c') ERROR    User id, ${stack_uid}, already in use - exiting"
          sleep 120
          exit 1
       else
-         echo "$(date '+%c') INFO     Creating user ${stack_user}:${user_id}"
-         adduser -s /bin/ash -D -G "${group}" -u "${user_id}" "${stack_user}" -h "/home/${stack_user}"
+         echo "$(date '+%c') INFO     Creating user ${stack_user}:${stack_uid}"
+         adduser -s /bin/ash -D -G "${group}" -u "${stack_uid}" "${stack_user}" -h "/home/${stack_user}"
       fi
    fi
 }
@@ -148,7 +157,7 @@ LaunchSubsonic(){
 
 ##### Script #####
 Initialise
-CheckOpenVPNPIA
+CheckPIANextGen
 EnableSSL
 CreateGroup
 CreateUser
