@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.14
 MAINTAINER boredazfcuk
 ARG app_dependencies="tzdata ca-certificates openjdk8-jre fontconfig openssl zip ffmpeg lame mariadb-client wget"
 ENV config_dir="/config" \
